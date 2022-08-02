@@ -1,0 +1,50 @@
+---
+name: Comment PR with Infra Plan Status
+on:
+  workflow_call:
+    inputs:
+      fmt:
+        required: true
+        type: string
+      init:
+        required: true
+        type: string
+      validate:
+        required: true
+        type: string
+      plan:
+        required: true
+        type: string
+      plan-output:
+        required: true
+        type: string
+
+jobs:
+  update-pr-with-infra-plan-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Pull Request
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const output = `#### Terraform Format 🖌\`${{ inputs.fmt }}\`
+            #### Terraform Initialization ⚙️\`${{ inputs.init }}\`
+            #### Terraform Plan 📖\`${{ inputs.plan }}\`
+            #### Terraform Validation 🤖\`${{ inputs.validate }}\`
+
+            <details><summary>Show Plan(Click on arrow to expand)</summary>
+
+            \`\`\`\n
+            ${{ inputs.plan-output }}
+            \`\`\`
+
+            </details>
+
+            *Pushed by: @${{ github.actor }}*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
