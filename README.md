@@ -1,2 +1,2 @@
-# automation
-Automation scripts and config to be used across the org
+# workflows
+Github workflows to be used across repos in the org
