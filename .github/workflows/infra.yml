@@ -39,7 +39,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   infra:
@@ -65,6 +64,7 @@ jobs:
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
           aws-region: ${{ inputs.aws-region }}
+          mask-aws-account-id: 'no'
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
