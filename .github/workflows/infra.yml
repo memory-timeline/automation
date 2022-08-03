@@ -1,5 +1,5 @@
 ---
-name: Setup terraform and plan
+name: Setup terraform, init, fmt, validate, plan, optionally apply
 on:
   workflow_call:
     inputs:
@@ -11,6 +11,9 @@ on:
         type: string
       workspace:
         required: true
+        type: string
+      apply:
+        default: 'false'
         type: string
     outputs:
       fmt:
@@ -38,7 +41,7 @@ permissions:
   contents: read
 
 jobs:
-  plan-infra:
+  infra:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -96,3 +99,7 @@ jobs:
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
         run: exit 1
+
+      - name: Terraform apply
+        if: ${{ inputs.apply }} == 'true'
+        run: terraform apply -auto-approve -input=false
