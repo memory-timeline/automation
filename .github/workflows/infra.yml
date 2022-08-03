@@ -18,19 +18,19 @@ on:
     outputs:
       fmt:
         description: "Outcome of terraform fmt -check"
-        value: ${{ jobs.plan-infra.outputs.fmt }}
+        value: ${{ jobs.infra.outputs.fmt }}
       init:
         description: "Outcome of terraform init"
-        value: ${{ jobs.plan-infra.outputs.init }}
+        value: ${{ jobs.infra.outputs.init }}
       validate:
         description: "Outcome of terraform validate"
-        value: ${{ jobs.plan-infra.outputs.validate }}
+        value: ${{ jobs.infra.outputs.validate }}
       plan:
         description: "Outcome of terraform plan"
-        value: ${{ jobs.plan-infra.outputs.plan }}
+        value: ${{ jobs.infra.outputs.plan }}
       plan-output:
         description: "Output of terraform plan"
-        value: ${{ jobs.plan-infra.outputs.plan-output }}
+        value: ${{ jobs.infra.outputs.plan-output }}
     secrets:
       aws-access-key-id:
         required: true
