@@ -101,5 +101,5 @@ jobs:
         run: exit 1
 
       - name: Terraform apply
-        if: ${{ inputs.apply }} == 'true'
+        if: ${{ inputs.apply == 'true' }}
         run: terraform apply -auto-approve -input=false
