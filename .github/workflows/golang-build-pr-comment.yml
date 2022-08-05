@@ -22,7 +22,7 @@ jobs:
         with:
           script: |
             const output = `#### Lint \`${{ inputs.lint }}\`
-            #### Test \`${{ inputs.tests }}\`
+            #### Test \`${{ inputs.test }}\`
             #### Build \`${{ inputs.build }}\`
 
             *Pushed by: @${{ github.actor }}*`;
