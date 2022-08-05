@@ -1,0 +1,55 @@
+---
+name: Setup golang, lint, test, check build, optionally create build artifact
+on:
+  workflow_call:
+    inputs:
+      create-build-artifact:
+        default: 'false'
+        type: string
+    outputs:
+      lint:
+        description: "Outcome of terraform fmt -check"
+        value: ${{ jobs.build.outputs.lint }}
+      test:
+        description: "Outcome of terraform init"
+        value: ${{ jobs.build.outputs.test }}
+      build:
+        description: "Outcome of terraform validate"
+        value: ${{ jobs.build.outputs.build }}
+
+jobs:
+  build:
+    name: golang-lint-test-build
+    runs-on: ubuntu-latest
+    outputs:
+      lint: ${{ steps.fmt.outcome }}
+      test: ${{ steps.init.outcome }}
+      build: ${{ steps.validate.outcome }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Golang
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.17
+
+      - name: Lint
+        id: lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.29
+
+      - name: Test
+        id: test
+        run: go test -v ./...
+
+      - name: Build
+        id: build
+        run: go build -v ./...
+        continue-on-error: true
+
+      - name: Build Status
+        if: steps.build.outcome == 'failure'
+        run: exit 1
