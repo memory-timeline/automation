@@ -14,25 +14,16 @@ on:
         type: string
 
 jobs:
-  update-pr-with-infra-plan-status:
+  update-pr-with-golang-build-status:
     runs-on: ubuntu-latest
     steps:
       - name: Update Pull Request
         uses: actions/github-script@v6
         with:
           script: |
-            const output = `#### Terraform Format 🖌\`${{ inputs.fmt }}\`
-            #### Terraform Initialization ⚙️\`${{ inputs.init }}\`
-            #### Terraform Plan 📖\`${{ inputs.plan }}\`
-            #### Terraform Validation 🤖\`${{ inputs.validate }}\`
-
-            <details><summary>Show Plan(Click on arrow to expand)</summary>
-
-            \`\`\`\n
-            ${{ inputs.plan-output }}
-            \`\`\`
-
-            </details>
+            const output = `#### Lint \`${{ inputs.lint }}\`
+            #### Test \`${{ inputs.tests }}\`
+            #### Build \`${{ inputs.build }}\`
 
             *Pushed by: @${{ github.actor }}*`;
 
