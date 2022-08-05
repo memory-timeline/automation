@@ -3,13 +3,19 @@ name: Comment PR with Infra Plan Status
 on:
   workflow_call:
     inputs:
-      lint:
+      fmt:
         required: true
         type: string
-      test:
+      init:
         required: true
         type: string
-      build:
+      validate:
+        required: true
+        type: string
+      plan:
+        required: true
+        type: string
+      plan-output:
         required: true
         type: string
 
