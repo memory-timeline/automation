@@ -22,9 +22,9 @@ jobs:
     name: golang-lint-test-build
     runs-on: ubuntu-latest
     outputs:
-      lint: ${{ steps.fmt.outcome }}
-      test: ${{ steps.init.outcome }}
-      build: ${{ steps.validate.outcome }}
+      lint: ${{ steps.lint.outcome }}
+      test: ${{ steps.test.outcome }}
+      build: ${{ steps.build.outcome }}
 
     steps:
       - name: Checkout
