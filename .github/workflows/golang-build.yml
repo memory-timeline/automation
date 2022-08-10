@@ -67,16 +67,16 @@ jobs:
 
       - name: Image Build
         id: image-build
-        run: docker build -t ${inputs.image-name} .
+        run: docker build -t ${{ inputs.image-name }} .
 
       - name: Authenticate Docker cli to AWS ECR
         if: ${{ inputs.update-image == 'true' }}
-        run: aws ecr get-login-password --region ${inputs.aws-region} | docker login --username AWS --password-stdin ${inputs.ecr-url}
+        run: aws ecr get-login-password --region ${{ inputs.aws-region }} | docker login --username AWS --password-stdin ${{ inputs.ecr-url }}
 
       - name: Tag image to match repo name
         if: ${{ inputs.update-image == 'true' }}
-        run: docker tag imagery ${inputs.ecr-url}/${inputs.image-name}:${inputs.workspace}-${inputs.version}
+        run: docker tag imagery ${{ inputs.ecr-url }}/${{ inputs.image-name }}:${{ inputs.workspace }}-${{ inputs.version }}
 
       - name: Deploy image
         if: ${{ inputs.update-image == 'true' }}
-        run: docker push ${inputs.ecr-url}/${inputs.image-name}:${inputs.workspace}-${inputs.version}
+        run: docker push ${{ inputs.ecr-url }}/${{ inputs.image-name }}:${{ inputs.workspace }}-${{ inputs.version }}
