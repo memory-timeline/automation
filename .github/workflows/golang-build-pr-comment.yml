@@ -12,6 +12,9 @@ on:
       build:
         required: true
         type: string
+      image-build:
+        required: true
+        type: string
 
 jobs:
   update-pr-with-golang-build-status:
@@ -24,6 +27,7 @@ jobs:
             const output = `#### Lint \`${{ inputs.lint }}\`
             #### Test \`${{ inputs.test }}\`
             #### Build \`${{ inputs.build }}\`
+            #### Image Build \`${{ inputs.image-build }}\`
 
             *Pushed by: @${{ github.actor }}*`;
 
