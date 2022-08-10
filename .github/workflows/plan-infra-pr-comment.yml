@@ -37,10 +37,12 @@ jobs:
 
             <details><summary>Show Plan(Click on arrow to expand)</summary>
 
+            #### Plan Output
             \`\`\`\n
             ${{ inputs.plan-output }}
             \`\`\`
 
+            #### Plan Error
             \`\`\`\n
             ${{ inputs.plan-error }}
             \`\`\`
