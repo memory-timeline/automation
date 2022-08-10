@@ -3,8 +3,25 @@ name: Setup golang, lint, test, check build, optionally create build artifact
 on:
   workflow_call:
     inputs:
-      create-build-artifact:
+      update-image:
         default: 'false'
+        type: string
+      aws-region:
+        description: "AWS region"
+        required: true
+        type: string
+      ecr-url:
+        description: "AWS ECR Url for account"
+        required: true
+        type: string
+      image-name:
+        required: true
+        type: string
+      workspace:
+        required: true
+        type: string
+      version:
+        required: true
         type: string
     outputs:
       lint:
@@ -16,6 +33,9 @@ on:
       build:
         description: "Outcome of terraform validate"
         value: ${{ jobs.build.outputs.build }}
+      image-build:
+        description: "Outcome of docker image build"
+        value: ${{ jobs.build.outputs.image-build }}
 
 jobs:
   build:
@@ -25,6 +45,7 @@ jobs:
       lint: ${{ steps.lint.outcome }}
       test: ${{ steps.test.outcome }}
       build: ${{ steps.build.outcome }}
+      image-build: ${{ steps.image-build.outcome }}
 
     steps:
       - name: Checkout
@@ -48,8 +69,19 @@ jobs:
       - name: Build
         id: build
         run: go build -v ./...
-        continue-on-error: true
 
-      - name: Build Status
-        if: steps.build.outcome == 'failure'
-        run: exit 1
+      - name: Image Build
+        id: image-build
+        run: docker build -t ${inputs.image-name} .
+
+      - name: Authenticate Docker cli to AWS ECR
+        if: ${{ inputs.update-image == 'true' }}
+        run: aws ecr get-login-password --region ${inputs.aws-region} | docker login --username AWS --password-stdin ${inputs.ecr-url}
+
+      - name: Tag image to match repo name
+        if: ${{ inputs.update-image == 'true' }}
+        run: docker tag imagery ${inputs.ecr-url}/${inputs.image-name}:${inputs.workspace}-${inputs.version}
+
+      - name: Deploy image
+        if: ${{ inputs.update-image == 'true' }}
+        run: docker push ${inputs.ecr-url}/${inputs.image-name}:${inputs.workspace}-${inputs.version}
