@@ -75,8 +75,12 @@ jobs:
 
       - name: Tag image to match repo name
         if: ${{ inputs.update-image == 'true' }}
-        run: docker tag imagery ${{ inputs.ecr-url }}/${{ inputs.image-name }}:${{ inputs.workspace }}-${{ inputs.version }}
+        run: |
+          docker tag ${{ inputs.image-name }} ${{ inputs.ecr-url }}/${{ inputs.image-name }}:${{ inputs.workspace }}-${{ inputs.version }}
+          docker tag ${{ inputs.image-name }} ${{ inputs.ecr-url }}/${{ inputs.image-name }}:${{ inputs.workspace }}
 
       - name: Deploy image
         if: ${{ inputs.update-image == 'true' }}
-        run: docker push ${{ inputs.ecr-url }}/${{ inputs.image-name }}:${{ inputs.workspace }}-${{ inputs.version }}
+        run: |
+          docker push ${{ inputs.ecr-url }}/${{ inputs.image-name }}:${{ inputs.workspace }}-${{ inputs.version }}
+          docker push ${{ inputs.ecr-url }}/${{ inputs.image-name }}:${{ inputs.workspace }}
