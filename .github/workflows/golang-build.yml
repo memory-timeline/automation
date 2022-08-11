@@ -84,16 +84,19 @@ jobs:
 
       - name: Authenticate Docker cli to AWS ECR
         if: ${{ inputs.update-image == 'true' }}
-        run: aws ecr get-login-password --region ${{ inputs.aws-region }} | docker login --username AWS --password-stdin ${{ inputs.ecr-url }}
+        id: login-ecr-public
+        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Tag image to match repo name
         if: ${{ inputs.update-image == 'true' }}
+        env:
+          REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
         run: |
-          docker tag ${{ inputs.image-name }} ${{ inputs.ecr-url }}/${{ inputs.image-name }}:${{ inputs.workspace }}-${{ inputs.version }}
-          docker tag ${{ inputs.image-name }} ${{ inputs.ecr-url }}/${{ inputs.image-name }}:${{ inputs.workspace }}
+          docker tag ${{ inputs.image-name }} $REGISTRY/${{ inputs.image-name }}:${{ inputs.workspace }}-${{ inputs.version }}
+          docker tag ${{ inputs.image-name }} $REGISTRY/${{ inputs.image-name }}:${{ inputs.workspace }}
 
       - name: Deploy image
         if: ${{ inputs.update-image == 'true' }}
         run: |
-          docker push ${{ inputs.ecr-url }}/${{ inputs.image-name }}:${{ inputs.workspace }}-${{ inputs.version }}
-          docker push ${{ inputs.ecr-url }}/${{ inputs.image-name }}:${{ inputs.workspace }}
+          docker push $REGISTRY/${{ inputs.image-name }}:${{ inputs.workspace }}-${{ inputs.version }}
+          docker push $REGISTRY/${{ inputs.image-name }}:${{ inputs.workspace }}
