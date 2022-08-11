@@ -84,19 +84,21 @@ jobs:
 
       - name: Authenticate Docker cli to AWS ECR
         if: ${{ inputs.update-image == 'true' }}
-        id: login-ecr-public
+        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Tag image to match repo name
         if: ${{ inputs.update-image == 'true' }}
         env:
-          REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           docker tag ${{ inputs.image-name }} $REGISTRY/${{ inputs.image-name }}:${{ inputs.workspace }}-${{ inputs.version }}
           docker tag ${{ inputs.image-name }} $REGISTRY/${{ inputs.image-name }}:${{ inputs.workspace }}
 
       - name: Deploy image
         if: ${{ inputs.update-image == 'true' }}
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           docker push $REGISTRY/${{ inputs.image-name }}:${{ inputs.workspace }}-${{ inputs.version }}
           docker push $REGISTRY/${{ inputs.image-name }}:${{ inputs.workspace }}
