@@ -50,7 +50,6 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
-        if: ${{ inputs.update-image == 'true' }}
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
