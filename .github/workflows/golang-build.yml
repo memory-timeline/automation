@@ -66,8 +66,6 @@ jobs:
       - name: Lint
         id: lint
         uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.29
 
       - name: Test
         id: test
