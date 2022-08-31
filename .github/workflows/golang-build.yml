@@ -77,7 +77,7 @@ jobs:
 
       - name: Image Build
         id: image-build
-        run: docker build -t ${{ inputs.image-name }} .
+        run: docker build --build-arg APP_ENV=${{ inputs.workspace }} -t ${{ inputs.image-name }} .
 
       - name: Authenticate Docker cli to AWS ECR
         if: ${{ inputs.update-image == 'true' }}
