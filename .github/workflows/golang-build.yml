@@ -49,6 +49,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Install depencencies
+        if: ${{ inputs.depencencies != '' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ inputs.dependencies }}
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
