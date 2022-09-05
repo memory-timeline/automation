@@ -18,6 +18,8 @@ on:
         type: string
       version:
         type: string
+      dependencies:
+        type: string
     outputs:
       lint:
         description: "Outcome of terraform fmt -check"
