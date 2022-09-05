@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install depencencies
-        if: ${{ inputs.depencencies != '' }}
+        if: ${{ inputs.dependencies != '' }}
         run: |
           sudo apt-get update
           sudo apt-get install -y ${{ inputs.dependencies }}
