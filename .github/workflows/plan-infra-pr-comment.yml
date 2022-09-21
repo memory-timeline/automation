@@ -18,6 +18,9 @@ on:
       plan-output:
         required: true
         type: string
+      plan-error:
+        required: true
+        type: string
 
 jobs:
   update-pr-with-infra-plan-status:
@@ -34,8 +37,14 @@ jobs:
 
             <details><summary>Show Plan(Click on arrow to expand)</summary>
 
+            ### Plan Output
             \`\`\`\n
             ${{ inputs.plan-output }}
+            \`\`\`
+
+            ### Plan Error
+            \`\`\`\n
+            ${{ inputs.plan-error }}
             \`\`\`
 
             </details>

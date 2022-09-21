@@ -8,20 +8,17 @@ on:
         type: string
       aws-region:
         description: "AWS region"
-        required: true
         type: string
       ecr-url:
         description: "AWS ECR Url for account"
-        required: true
         type: string
       image-name:
-        required: true
         type: string
       workspace:
-        required: true
         type: string
       version:
-        required: true
+        type: string
+      dependencies:
         type: string
     outputs:
       lint:
@@ -36,11 +33,14 @@ on:
       image-build:
         description: "Outcome of docker image build"
         value: ${{ jobs.build.outputs.image-build }}
+    secrets:
+      aws-access-key-id:
+      aws-secret-access-key:
 
 jobs:
   build:
     name: golang-lint-test-build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       lint: ${{ steps.lint.outcome }}
       test: ${{ steps.test.outcome }}
@@ -51,6 +51,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Install depencencies
+        if: ${{ inputs.dependencies != '' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ inputs.dependencies }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          aws-region: ${{ inputs.aws-region }}
+          mask-aws-account-id: 'no'
+
+
       - name: Setup Golang
         uses: actions/setup-go@v3
         with:
@@ -60,7 +75,7 @@ jobs:
         id: lint
         uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.29
+          args: --timeout 10m --verbose
 
       - name: Test
         id: test
@@ -72,16 +87,25 @@ jobs:
 
       - name: Image Build
         id: image-build
-        run: docker build -t ${inputs.image-name} .
+        run: docker build --build-arg APP_ENV=${{ inputs.workspace }} -t ${{ inputs.image-name }} .
 
       - name: Authenticate Docker cli to AWS ECR
         if: ${{ inputs.update-image == 'true' }}
-        run: aws ecr get-login-password --region ${inputs.aws-region} | docker login --username AWS --password-stdin ${inputs.ecr-url}
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Tag image to match repo name
         if: ${{ inputs.update-image == 'true' }}
-        run: docker tag imagery ${inputs.ecr-url}/${inputs.image-name}:${inputs.workspace}-${inputs.version}
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker tag ${{ inputs.image-name }} $REGISTRY/${{ inputs.image-name }}:${{ inputs.workspace }}-${{ inputs.version }}
+          docker tag ${{ inputs.image-name }} $REGISTRY/${{ inputs.image-name }}:${{ inputs.workspace }}
 
       - name: Deploy image
         if: ${{ inputs.update-image == 'true' }}
-        run: docker push ${inputs.ecr-url}/${inputs.image-name}:${inputs.workspace}-${inputs.version}
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker push $REGISTRY/${{ inputs.image-name }}:${{ inputs.workspace }}-${{ inputs.version }}
+          docker push $REGISTRY/${{ inputs.image-name }}:${{ inputs.workspace }}

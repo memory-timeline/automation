@@ -29,8 +29,11 @@ on:
         description: "Outcome of terraform plan"
         value: ${{ jobs.infra.outputs.plan }}
       plan-output:
-        description: "Output of terraform plan"
+        description: "Standard Output of terraform plan"
         value: ${{ jobs.infra.outputs.plan-output }}
+      plan-error:
+        description: "Error Output of terraform plan"
+        value: ${{ jobs.infra.outputs.plan-error }}
     secrets:
       aws-access-key-id:
         required: true
@@ -52,6 +55,7 @@ jobs:
       validate: ${{ steps.validate.outcome }}
       plan: ${{ steps.plan.outcome }}
       plan-output: ${{ steps.plan.outputs.stdout }}
+      plan-error: ${{ steps.plan.outputs.stderr }}
 
     steps:
 
