@@ -79,7 +79,11 @@ jobs:
 
       - name: Test
         id: test
-        run: go test -v ./...
+        run: |
+          set -a
+          . ./.env.${{ inputs.workspace }}
+          set +a
+          go test -v ./...
 
       - name: Build
         id: build
