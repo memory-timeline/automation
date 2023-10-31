@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       update-image:
-        default: 'false'
+        default: "false"
         type: string
       aws-region:
         description: "AWS region"
@@ -58,13 +58,12 @@ jobs:
           sudo apt-get install -y ${{ inputs.dependencies }}
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
           aws-region: ${{ inputs.aws-region }}
-          mask-aws-account-id: 'no'
-
+          mask-aws-account-id: "no"
 
       - name: Setup Golang
         uses: actions/setup-go@v3
@@ -96,7 +95,7 @@ jobs:
       - name: Authenticate Docker cli to AWS ECR
         if: ${{ inputs.update-image == 'true' }}
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Tag image to match repo name
         if: ${{ inputs.update-image == 'true' }}
